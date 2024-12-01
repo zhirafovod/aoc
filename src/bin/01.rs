@@ -18,21 +18,14 @@ pub fn lines_to_left_right_numbers(input: &str) -> (Vec<i32>, Vec<i32>) {
         let parts: Vec<&str>= l.trim().split_whitespace().collect();
         let num_left: i32 = match parts[0].parse() {
             Ok(n) => n,
-            Err(_) => {
-                eprintln!("Error: First part is not a valid number");
-                return;
-            }
+            Err(_) => { eprintln!("Error: First part is not a valid number");return; }
         };
 
         let num_right: i32 = match parts[1].parse() {
             Ok(n) => n,
-            Err(_) => {
-                eprintln!("Error: Second part is not a valid number");
-                return;
+            Err(_) => { eprintln!("Error: Second part is not a valid number");return;
             }
         };
-        // println!("Number 1: {}", num_left);
-        // println!("Number 2: {}", num_right);
         nums_left.push(num_left);
         nums_right.push(num_right);
     });
@@ -40,34 +33,7 @@ pub fn lines_to_left_right_numbers(input: &str) -> (Vec<i32>, Vec<i32>) {
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
-    // println!("{input}");
     let (mut nums_left, mut nums_right) = lines_to_left_right_numbers(input);
-    // let lines: Vec<&str> = input.lines().collect();
-    // let n = lines.len();
-    // let mut nums_left = Vec::with_capacity(n);
-    // let mut nums_right = Vec::with_capacity(n);
-    // lines.into_iter().for_each(|l| {
-    //     let parts: Vec<&str>= l.trim().split_whitespace().collect();
-    //     let num_left: i32 = match parts[0].parse() {
-    //         Ok(n) => n,
-    //         Err(_) => {
-    //             eprintln!("Error: First part is not a valid number");
-    //             return;
-    //         }
-    //     };
-    //
-    //     let num_right: i32 = match parts[1].parse() {
-    //         Ok(n) => n,
-    //         Err(_) => {
-    //             eprintln!("Error: Second part is not a valid number");
-    //             return;
-    //         }
-    //     };
-    //     // println!("Number 1: {}", num_left);
-    //     // println!("Number 2: {}", num_right);
-    //     nums_left.push(num_left);
-    //     nums_right.push(num_right);
-    // });
 
     nums_left.sort();
     nums_right.sort();
@@ -81,11 +47,13 @@ pub fn part_one(input: &str) -> Option<u32> {
     nums_left.iter()
         .zip(nums_right.iter())
         .for_each(|(left, right)| {
+
+            // another (failed) approach to handle failed casting...
             // match calculate_abs_diff(*left, *right) {
             //     Some(value) => println!("left: {}, right: {}, Abs Difference: Some({})", left, right, value),
             //     None => println!("Left: {}, right: {}, Abs Difference: None", left, right),
             // }
-            total_difference += (left - right).abs() as u32;
+            total_difference += (left - right).abs() as u32; // hehe, what happens if we can't cast? need to do better
         });
     Some(total_difference)
 }
