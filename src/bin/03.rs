@@ -27,7 +27,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(sum as u32)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
+pub fn part_two_slow(input: &str) -> Option<u32> {
     let re_dont = Regex::new(r"don't\(\)").unwrap();
     let re_do = Regex::new(r"do\(\)").unwrap();
     let re_mul = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
@@ -52,6 +52,37 @@ pub fn part_two(input: &str) -> Option<u32> {
     Some(sum as u32)
 }
 
+pub fn part_two(l: &str) -> Option<u32> {
+    part_two_slow(l)
+}
+
+pub fn part_two_faster(s: &str) -> Option<u32> {
+    let re_dont = Regex::new(r"don't\(\)").unwrap();
+    let re_do = Regex::new(r"do\(\)").unwrap();
+    let re_mul = Regex::new(r"^mul\((\d{1,3}),(\d{1,3})\)").unwrap();
+
+    let mut cur = 0;
+    let mut enabled = true;
+    let mut sum = 0;
+    while cur < s.len() {
+        if &s[cur..].starts_with("do()") {
+            enabled = true;
+            cur += 4;
+        } else if &s[cur..].starts_with("don't()") {
+            enabled = true;
+            cur += 7
+        } else if let Some(caps) = re_mul.captures(&s[cur..]) {
+            if caps.len() > 0 {
+                sum += apply_mul(&s[cur..]);
+            } else {
+                cur += 1;
+            }
+        } else {
+            cur += 1;
+        }
+    };
+    Some(cur as u32)
+}
 
 #[cfg(test)]
 mod tests {
