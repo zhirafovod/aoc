@@ -21,22 +21,47 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut sum = 0;
     input.lines().for_each(|l| {
         let r = apply_mul(l);
-        println!("{l}: {r}\n");
+        // println!("{l}: {r}\n");
         sum += r;
     });
     Some(sum as u32)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    // let re_do = Regex::new(r"(^(don't|$)");
-    // let re_dont = Regex::
-    None
+    let re_dont = Regex::new(r"don't\(\)").unwrap();
+    let re_do = Regex::new(r"do\(\)").unwrap();
+    let re_mul = Regex::new(r"mul\((\d{1,3}),(\d{1,3})\)").unwrap();
+    let mut tokens = re_do.find_iter(input).map(|m| (m.start(), "do", m.end()))
+        .chain(re_dont.find_iter(input).map(|m| (m.start(), "don't", m.end())))
+        .chain(re_mul.find_iter(input).map(|m| (m.start(), m.as_str(), m.end())))
+        .collect::<Vec<_>>();
+        // .for_each(|(i, m, _)| println!("{i}:{m:?}"));
+
+    tokens.sort_by_key(|(index, _ , _)| *index);
+    tokens.iter().for_each(|e| println!("{e:?}"));
+    let mut enabled = true;
+    let mut sum = 0;
+    for (_, op, _) in tokens {
+        match op {
+            "don't" => enabled = false,
+            "do" => enabled = true,
+            l => if enabled { sum += apply_mul(l) },
+        }
+    }
+
+    Some(sum as u32)
 }
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[test]
+    fn test_part_two_example() {
+        let result = part_two("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))");
+        assert_eq!(result, Some(48));
+    }
     #[test]
     fn test_part_one() {
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
